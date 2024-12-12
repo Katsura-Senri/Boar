@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>对话机器人</title>
+</head>
+<body>
+    <h1>对话机器人</h1>
+    <div id="chatbox">
+        <div id="chat-log" style="max-height: 300px; overflow-y: auto;"></div>
+        <input type="text" id="user-input" placeholder="输入你的问题..." />
+        <button onclick="sendMessage()">发送</button>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const userInput = document.getElementById("user-input").value;
+            if (!userInput) return;
+    
+            const chatLog = document.getElementById("chat-log");
+            const userMessage = document.createElement("p");
+            userMessage.textContent = "你: " + userInput;
+            chatLog.appendChild(userMessage);
+    
+            try {
+                const response = await fetch("http://127.0.0.1:5000/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: userInput })
+                });
+    
+                if (!response.ok) {
+                    throw new Error("请求失败，状态码: " + response.status);
+                }
+    
+                const data = await response.json();
+                if (data && data.reply) {
+                    const botMessage = document.createElement("p");
+                    botMessage.textContent = "机器人: " + data.reply;
+                    chatLog.appendChild(botMessage);
+                } else {
+                    console.error("Unexpected response format:", data);
+                    const errorMessage = document.createElement("p");
+                    errorMessage.textContent = "机器人: 抱歉，服务器返回了错误的数据格式。";
+                    chatLog.appendChild(errorMessage);
+                }
+            } catch (error) {
+                console.error("Error during fetch:", error);
+                const errorMessage = document.createElement("p");
+                errorMessage.textContent = error;
+                chatLog.appendChild(errorMessage);
+            }
+    
+            chatLog.scrollTop = chatLog.scrollHeight;
+            document.getElementById("user-input").value = "";
+            document.getElementById("user-input").focus();
+        }
+    </script>
+    
+</body>
+</html>

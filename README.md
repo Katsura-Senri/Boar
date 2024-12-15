@@ -13,6 +13,8 @@ Software Engineering-LLM
 
 4.我们使用 [TogetherAI](https://www.together.ai/)作为LLM源，若将本项目用于测试之外用途，请自行申请API密钥(https://docs.together.ai/docs/inference-models)
 
+5.本项目需要连接互联网使用
+
 API密钥使用方法
 
 a.使用指令：
